@@ -1,11 +1,32 @@
 ---
-
+const navItems = [
+    { linkText: 'Discord', href: 'https://discord.gg/xSqkHaWhna' },
+    { linkText: 'Youtube', href: 'https://www.youtube.com/@ndkas7986' },
+    { linkText: 'Tiktok', href: 'https://tiktok.com/@khoanoob9' },
+    { linkText: 'X', href: 'https://x.com/NLukash_' },
+    { linkText: 'Facebook', href: 'https://www.facebook.com/khoa.noob.9/' }
+];
 ---
 
-<!--
-<footer class="pt-16 pb-12 sm:pt-24 sm:pb-16">
+<footer class="pt-6 pb-2 sm:pt-10 sm:pb-5" style="background-color: rgb(0, 0, 0);">
+    <p class="text-2xl">Project SAKUL</p>
+    <p class="text-sm">Delivered to you by team SAKUL (only 1 member - Khoa at the moment bruh)</p>
     <p class="text-sm">
-        <a href="https://docs.netlify.com/frameworks/astro/" class="decoration-dashed text-primary underline-offset-8"> Astro on Netlify </a>
+        <a href="https://docs.netlify.com/frameworks/astro/" class="no-underline text-primary"> Astro on Netlify </a>
     </p>
+    <nav>
+        {
+            !!navItems?.length && (
+                <ul>
+                    {navItems.map((item) => (
+                        <li>
+                            <a href={item.href} class="text-sm no-underline">
+                                {item.linkText}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            )
+        }
+    </nav>
 </footer>
--->
