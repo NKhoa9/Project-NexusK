@@ -1,33 +1,28 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Markdown from '../components/Markdown.astro';
-const rr = `
-\n\n\n\n
-To make this less empty, here's sum 'random' letters 
+const welcome_msg = `
+# Welcome to Project NexusK!
 
-aiueo kakikukeko sashisuseso tachitsuteto naninuneno hahifuheho mamimumemo yayuyo rarirurero wawo n \n
-abcdefghijklmnopqrstuvwxyz\n
-opawoeiurpwoaieurpoapoairweawe\n
-gat\n
-we\n
-her\n
-hyjsy7rtk\n
-gtu9ldr68wj6r\n
-t67lr9,79rt7 m5mt79e6\n
-l67e9567eh57etyk9r5l79e\n
-5yuierm6uityikftl9dry\n
-u8erunhdrky8d\n
-ri7midtyl9dr578er5\n
-ty9ldr68w4568j6r8futyi9\n
-lfr6tue457kry8,lftyidfrm68ej57\n
-kse57hnse5j76t8l79\n`;
+This is your gateway to exploring the amazing things we've made for you. Whether you're here to **learn**, **create**, or simply **have fun**, you're in the right place.
+
+> **Note:** This site is currently under development, so some features may still be a work in progress.
+ This site is recommended to be viewed on a computer.
+ Thank you for your patience and support!
+
+## Join Our Community
+
+We'd love to hear from you! Join our [Discord server](https://discord.gg/xSqkHaWhna) to connect with other users, share your thoughts, and stay updated on the latest developments.
+
+Stay curious, and enjoy your journey with **Project NexusK**!
+`;
 ---
 
-<Layout title="Welcome to SAKUL">
+<Layout title="Project NexusK">
     <div>
+        <Markdown content={welcome_msg} />
         <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ" class="text-xl no-underline">
             <b>Click here for FUN! :))</b>
         </a>
-        <Markdown content={rr} />
     </div>
 </Layout>
