@@ -40,7 +40,7 @@ const dropdowns = {
                         <ul class="absolute left-0 bg-black text-white shadow-lg rounded-md mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                             {items.map((item) => (
                                 <li>
-                                    <a href={item.href} class="block px-4 py-2 hover:bg-gray-700 no-underline">
+                                    <a href={item.href} class="block px-4 py-2 hover:bg-gray-900 no-underline">
                                         {item.linkText}
                                     </a>
                                 </li>
@@ -81,8 +81,8 @@ const dropdowns = {
 
     .group > ul {
         transition:
-            opacity 0.3s ease,
-            visibility 0.3s ease; /* Smooth fade-in and fade-out */
+            opacity 0.5s ease,
+            visibility 0.5s ease; /* Smooth fade-in and fade-out */
     }
 
     .group:hover > ul {

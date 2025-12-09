@@ -3,25 +3,17 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="RR Embed">
-    <div class="relative">
+    <p class="text-xl">Big fan, huh? Enjoy :)</p>
+    <div class="relative aspect-16/9">
         <div class="h-0 pt-[30%]">
-            <table>
-                <tr>
-                    <td><p class="text-xl">Big fan, huh? Enjoy :)</p> </td>
-                </tr>
-                <tr>
-                    <td>
-                        <iframe
-                            class="h-full w-full absolute top-0 left-0"
-                            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&loop=1&playlist=dQw4w9WgXcQ"
-                            title="Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin"
-                            allowfullscreen></iframe>
-                    </td>
-                </tr>
-            </table>
+            <iframe
+                class="h-full w-full absolute top-0 left-0"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&loop=1&playlist=dQw4w9WgXcQ"
+                title="Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen></iframe>
         </div>
     </div>
 </Layout>
