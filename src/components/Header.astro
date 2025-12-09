@@ -1,18 +1,24 @@
 ---
+import { link } from 'fs';
 import Logo from '../components/Logo.astro';
 
 const navItems = [
     { linkText: 'Project NexusK', href: '/' },
-    { linkText: 'RR embed', href: '/rrembed' },
-    //{ linkText: 'Revalidation', href: '/revalidation' },
-    { linkText: 'Corgi!', href: '/image-cdn' }
-    //{ linkText: 'Edge Function', href: '/edge' },
-    //{ linkText: 'Blobs', href: '/blobs' }*/
+    { linkText: 'Christmas SP!', href: '/christmas-sp' }
 ];
+
+const dropdowns = {
+    Fun: [{ linkText: 'RR embed', href: '/rrembed' }],
+    Projects: [{ linkText: 'Not yet lol' }],
+    Tests: [
+        { linkText: 'Corgi!', href: '/image-cdn' },
+        { linkText: 'Blobs', href: '/blobs' }
+    ]
+};
 ---
 
 <nav
-    class="flex flex-wrap items-center gap-4 sm:pt-1 sm:pb-1 text-2xl font-bold box-border border-10 border-transparent"
+    class="relative flex flex-wrap items-center gap-4 sm:pt-1 sm:pb-1 text-2xl font-bold box-border border-10 border-transparent"
     style="background-color: rgba(0, 0, 0, 0.212);"
 >
     <a href="/">
@@ -20,7 +26,7 @@ const navItems = [
     </a>
     {
         !!navItems?.length && (
-            <ul class="flex flex-wrap gap-x-2 gap-y-1">
+            <ul class="flex flex-wrap gap-x-2">
                 {navItems.map((item) => (
                     <li>
                         <a href={item.href} class="inline-block px-1.5 py-1 sm:px-3 sm:py-2 no-underline">
@@ -28,7 +34,64 @@ const navItems = [
                         </a>
                     </li>
                 ))}
+                {Object.entries(dropdowns).map(([dropdownTitle, items]) => (
+                    <li class="relative group">
+                        <span class="inline-block px-1.5 py-1 sm:py-2 cursor-pointer">{dropdownTitle}</span>
+                        <ul class="absolute left-0 bg-black text-white shadow-lg rounded-md mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
+                            {items.map((item) => (
+                                <li>
+                                    <a href={item.href} class="block px-4 py-2 hover:bg-gray-700 no-underline">
+                                        {item.linkText}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                ))}
             </ul>
         )
     }
 </nav>
+
+<style>
+    nav {
+        position: relative; /* Ensure dropdowns are positioned relative to the nav */
+        overflow: visible; /* Allow dropdowns to extend outside the nav */
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .group {
+        position: relative; /* Ensure dropdowns are positioned relative to the parent li */
+    }
+
+    .group > ul {
+        position: absolute; /* Position dropdown relative to the parent li */
+        z-index: 10; /* Ensure dropdown appears above other elements */
+        white-space: nowrap; /* Prevent content from breaking into two lines */
+    }
+
+    .group > ul > li > a {
+        white-space: nowrap; /* Ensure dropdown items stay on one line */
+    }
+
+    .group > ul {
+        transition:
+            opacity 0.3s ease,
+            visibility 0.3s ease; /* Smooth fade-in and fade-out */
+    }
+
+    .group:hover > ul {
+        opacity: 1; /* Fully visible on hover */
+        visibility: visible; /* Ensure visibility */
+    }
+
+    .group > ul {
+        opacity: 0; /* Hidden by default */
+        visibility: hidden; /* Hidden by default */
+    }
+</style>
