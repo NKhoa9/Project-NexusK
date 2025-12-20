@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Caluloworld">
+    <div class="flex justify-center pt-20">
+        <form id="f" style="display: block;">
+            <label class="block">Type expression: <input type="text" style="background-color: rgba(255, 255, 255, 0.11);" /></label>
+            <button id="callo" class="border border-white p-2" type="button">Calculate</button>
+        </form>
+        <div id="result" class="pt-4 flex justify-center items-center"></div>
+    </div>
+    <script>
+        const btn = document.getElementById('callo');
+        const form = document.getElementById('f');
+        const resultDiv = document.getElementById('result');
+
+        btn.addEventListener('click', () => {
+            form.style.display = 'none';
+
+            // Create and show the loading animation
+            const loader = document.createElement('div');
+            loader.innerHTML = 'Processing...';
+            resultDiv.innerHTML = ''; // Clear any previous content
+            resultDiv.appendChild(loader);
+
+            // Simulate a delay (e.g., 2 seconds) before showing the result
+            setTimeout(() => {
+                resultDiv.innerHTML = ''; // Clear the loader
+                const p = document.createElement('h1');
+                p.innerHTML = 'Hello World! lol';
+                resultDiv.appendChild(p);
+            }, 5000); // 2-second delay
+        });
+    </script>
+</Layout>

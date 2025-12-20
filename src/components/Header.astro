@@ -8,11 +8,14 @@ const navItems = [
 ];
 
 const dropdowns = {
-    Fun: [{ linkText: 'RR embed', href: '/rrembed' }],
+    Random: [
+        { linkText: 'RR embed', href: '/random/rrembed' },
+        { linkText: 'Calculonton', href: '/random/calculonton' }
+    ],
     Projects: [{ linkText: 'Not yet lol' }],
     Tests: [
-        { linkText: 'Corgi!', href: '/image-cdn' },
-        { linkText: 'Blobs', href: '/blobs' }
+        { linkText: 'Corgi!', href: '/tests/corgi' },
+        { linkText: 'Blobs', href: '/tests/blobs' }
     ]
 };
 ---
@@ -36,7 +39,9 @@ const dropdowns = {
                 ))}
                 {Object.entries(dropdowns).map(([dropdownTitle, items]) => (
                     <li class="relative group">
-                        <span class="inline-block px-1.5 py-1 sm:py-2 cursor-pointer">{dropdownTitle}</span>
+                        <a href={`/${dropdownTitle.toLowerCase()}`} class="inline-block px-1.5 py-1 sm:py-2 cursor-pointer no-underline">
+                            {dropdownTitle}
+                        </a>
                         <ul class="absolute left-0 bg-black text-white shadow-lg rounded-md mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                             {items.map((item) => (
                                 <li>
