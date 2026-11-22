@@ -1,5 +1,5 @@
 export type BlobParameterProps = {
-    seed: number;
+    seed: number | null;
     size: number;
     edges: number;
     growth: number;

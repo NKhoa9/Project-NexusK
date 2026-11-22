@@ -1,20 +1,15 @@
 import type { APIRoute } from 'astro';
 import { getStore } from '@netlify/blobs';
+import { json } from '../../utils';
 
 export const prerender = false;
 
-export const GET: APIRoute = async (context) => {
-    const urlParams = new URL(context.url);
-    const key = urlParams.searchParams.get('key');
-    if (!key) {
-        return new Response('Bad Request', { status: 400 });
-    }
+export const GET: APIRoute = async ({ url }) => {
+    const key = url.searchParams.get('key');
+    if (!key) return json({ error: 'Missing "key" query parameter' }, { status: 400 });
 
-    const blobStore = getStore('shapes');
-    const blob = await blobStore.get(key, { type: 'json' });
-    return new Response(
-        JSON.stringify({
-            blob
-        })
-    );
+    const blob = await getStore('shapes').get(key, { type: 'json' });
+    if (blob === null) return json({ error: `Shape "${key}" not found` }, { status: 404 });
+
+    return json({ blob });
 };

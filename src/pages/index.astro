@@ -1,15 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Markdown from '../components/Markdown.astro';
-const welcome_msg = `
+import { sections } from '../data/navigation';
 
-# Welcome to Project NexusK!
-
+const welcomeMsg = `
 This is your gateway to exploring the amazing things we've made for you. Whether you're here to **learn**, **create**, or simply **have fun**, you're in the right place.
 
 > **Note:** This site is currently under development, very early stage, so most features may still be a work in progress or, in short, unavailable.
- This site is recommended to be viewed on a computer.
- Thank you for your patience and support!
+> This site is recommended to be viewed on a computer.
+> Thank you for your patience and support!
 
 ## Join Our Community
 
@@ -20,10 +19,28 @@ Stay curious, and enjoy your journey with **Project NexusK**!
 ---
 
 <Layout title="Project NexusK">
-    <div class="box-border border-30 border-transparent">
-        <Markdown content={welcome_msg} />
-        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ" class="text-xl no-underline">
-            <b>Click here for FUN! :))</b>
-        </a>
-    </div>
+    <section class="mb-12">
+        <p class="mb-3 text-sm font-semibold tracking-widest text-primary uppercase">Team SAKUL presents</p>
+        <h1>Welcome to Project NexusK!</h1>
+    </section>
+
+    <Markdown content={welcomeMsg} class="max-w-3xl text-lg" />
+
+    <section class="mt-14">
+        <h2 class="mb-6">Explore</h2>
+        <ul class="grid gap-4 sm:grid-cols-3">
+            {
+                sections.map((section) => (
+                    <li>
+                        <a href={section.href} class="card h-full">
+                            <span class="block text-lg font-semibold">{section.title}</span>
+                            <span class="mt-1 block text-sm text-white/60">{section.description}</span>
+                        </a>
+                    </li>
+                ))
+            }
+        </ul>
+    </section>
+
+    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ" class="btn btn-lg mt-12">Click here for FUN! :))</a>
 </Layout>

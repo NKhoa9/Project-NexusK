@@ -23,7 +23,21 @@
     }
 
     a:not(.btn) {
-        @apply underline transition hover:opacity-80;
+        @apply underline underline-offset-2 transition hover:opacity-80;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-primary;
+    }
+
+    blockquote {
+        @apply border-l-4 border-primary/70 bg-white/5 px-5 py-3 rounded-r-md text-white/85;
+    }
+
+    input,
+    textarea,
+    select {
+        @apply rounded-md border border-white/15 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 focus:border-primary focus:outline-none;
     }
 
     pre {
@@ -36,8 +50,26 @@
     }
 }
 
+@utility container-page {
+    @apply mx-auto w-full max-w-5xl px-5 sm:px-8;
+}
+
 @layer components {
     .markdown {
+        @apply leading-relaxed;
+
+        a {
+            @apply text-primary;
+        }
+
+        ul {
+            @apply list-disc pl-6;
+        }
+
+        ol {
+            @apply list-decimal pl-6;
+        }
+
         > * {
             @apply my-6;
         }
@@ -66,8 +98,20 @@
         }
 
         &:disabled {
-            @apply text-gray-400 bg-gray-700;
+            @apply cursor-not-allowed text-gray-400 bg-gray-700;
         }
+    }
+
+    .btn-outline {
+        @apply border border-white/25 bg-transparent text-white;
+
+        &:hover {
+            @apply bg-white/10;
+        }
+    }
+
+    .card {
+        @apply block rounded-xl border border-white/10 bg-black/30 p-5 no-underline transition hover:border-primary/60 hover:bg-black/45 hover:opacity-100;
     }
 
     .btn-lg {

@@ -7,12 +7,10 @@ import Layout from '../../layouts/Layout.astro';
 
 const sampleImage = '/images/corgi.jpg';
 
-const forceWebP = (process.env.NODE_ENV = 'development');
-const sampleImageSrcSet = [640, 1280, 2048]
-    .map((size) => {
-        return `/.netlify/images?url=${sampleImage}&w=${size}${forceWebP ? '&fm=webp' : ''} ${size}w`;
-    })
-    .join(', ');
+// Local dev has no automatic format negotiation, so force WebP there.
+// (Previously this was an accidental assignment — `process.env.NODE_ENV = 'development'` — which was always truthy.)
+const forceWebP = import.meta.env.DEV;
+const sampleImageSrcSet = [640, 1280, 2048].map((size) => `/.netlify/images?url=${sampleImage}&w=${size}${forceWebP ? '&fm=webp' : ''} ${size}w`).join(', ');
 const sizes = '(max-width: 1024px) 100vw, 1024px';
 
 const astroImageSnippet = `
@@ -49,13 +47,9 @@ Note that aside from Astro's \`Image\` or rolling your own \`<img>\` tags, you c
 ~~~
 `;
 
-const devModeWarning = `
-In local development, optimization is performed locally without automatic format
-detection, so format is set to WebP.
-`;
 ---
 
-<Layout title="Image CDN">
+<Layout title="Image CDN" description="Netlify Image CDN, demonstrated with a very good dog.">
     <div class="flex flex-col gap-12 sm:gap-16">
         <section>
             <h1>Image CDN</h1>
@@ -63,7 +57,7 @@ detection, so format is set to WebP.
         <section>
             <Markdown content={astroImageSnippet} class="mb-8" />
             <figure>
-                <Image src={corgi} alt="Corgi" class="border-2 border-white rounded-lg" />
+                <Image src={corgi} alt="Corgi" class="h-auto w-full rounded-lg border-2 border-white" widths={[640, 1024, 1536]} sizes={sizes} />
                 <figcaption class="mt-2 text-sm italic">
                     Credit: photo by <a href="https://unsplash.com/@alvannee">Alvan Nee</a> on
                     <a href="https://unsplash.com/photos/long-coated-white-and-brown-dog-lvFlpqEvuRM"> Unsplash </a>
@@ -77,7 +71,7 @@ detection, so format is set to WebP.
                     <div>
                         <div class="relative">
                             <span class="hidden absolute py-1.5 px-2.5 text-sm rounded-md bg-gray-900/70 top-2.5 left-2.5"></span>
-                            <img src={sampleImage} alt="Corgi" />
+                            <img src={sampleImage} alt="Original corgi image" loading="lazy" decoding="async" />
                         </div>
                     </div>
                 </Fragment>
@@ -85,8 +79,7 @@ detection, so format is set to WebP.
                     <div>
                         <div class="relative">
                             <span class="hidden absolute py-1.5 px-2.5 text-sm rounded-md bg-gray-900/70 top-2.5 right-2.5"></span>
-
-                            <img srcset={sampleImageSrcSet} alt="Corgi" />
+                            <img src={sampleImage} srcset={sampleImageSrcSet} sizes={sizes} alt="Optimized corgi image" loading="lazy" decoding="async" />
                         </div>
                     </div>
                 </Fragment>
@@ -99,19 +92,14 @@ detection, so format is set to WebP.
     const images = document.querySelectorAll<HTMLImageElement>('.image-diff img');
 
     images.forEach((image) => {
-        if (image.complete) {
-            showImageSize(image);
-        } else {
-            image.addEventListener('load', () => {
-                showImageSize(image);
-            });
-        }
+        if (image.complete) showImageSize(image);
+        else image.addEventListener('load', () => showImageSize(image), { once: true });
     });
 
     function showImageSize(image: HTMLImageElement) {
         const imageEntry = window?.performance?.getEntriesByName(image.currentSrc)?.[0] as PerformanceResourceTiming;
-        if (imageEntry && imageEntry.encodedBodySize) {
-            const imageOverlay = image.previousElementSibling;
+        const imageOverlay = image.previousElementSibling;
+        if (imageOverlay && imageEntry?.encodedBodySize) {
             imageOverlay.classList.remove('hidden');
             imageOverlay.textContent = `Size: ${Math.ceil(imageEntry.encodedBodySize / 1024)}KB`;
         }
