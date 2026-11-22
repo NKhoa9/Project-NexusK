@@ -1,32 +1,30 @@
 ---
-const navItems = [
-    { linkText: 'Discord', href: 'https://discord.gg/xSqkHaWhna' },
-    { linkText: 'Youtube', href: 'https://www.youtube.com/@ndkas7986' },
-    { linkText: 'Tiktok', href: 'https://tiktok.com/@khoanoob9' },
-    { linkText: 'X', href: 'https://x.com/NLukash_' },
-    { linkText: 'Facebook', href: 'https://www.facebook.com/khoa.noob.9/' }
-];
+import { socialLinks } from '../data/navigation';
+
+const year = new Date().getFullYear();
 ---
 
-<footer class="pt-3 pb-2 sm:pt-5 sm:pb-5 box-border border-10 border-transparent" style="background-color: rgb(0, 0, 0);">
-    <p class="text-2xl">Project NexusK</p>
-    <p class="text-sm">Delivered to you by team SAKUL (only 1 member - Khoa at the moment bruh)</p>
-    <p class="text-sm">
-        <a href="https://docs.netlify.com/frameworks/astro/" class="no-underline text-primary"> Astro on Netlify </a>
-    </p>
-    <nav>
-        {
-            !!navItems?.length && (
-                <ul>
-                    {navItems.map((item) => (
+<footer class="mt-16 border-t border-white/10 bg-black">
+    <div class="container-page flex flex-col gap-6 py-8 sm:flex-row sm:items-start sm:justify-between">
+        <div class="space-y-1">
+            <p class="text-xl font-bold">Project NexusK</p>
+            <p class="text-sm text-white/60">Delivered to you by team SAKUL (only 1 member - Khoa at the moment bruh)</p>
+            <p class="text-sm text-white/40">
+                &copy; {year} &middot; <a href="https://docs.netlify.com/frameworks/astro/" class="text-primary no-underline">Astro on Netlify</a>
+            </p>
+        </div>
+        <nav aria-label="Social">
+            <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                {
+                    socialLinks.map((link) => (
                         <li>
-                            <a href={item.href} class="text-sm no-underline">
-                                {item.linkText}
+                            <a href={link.href} target="_blank" rel="noopener noreferrer" class="text-white/70 no-underline hover:text-white">
+                                {link.label}
                             </a>
                         </li>
-                    ))}
-                </ul>
-            )
-        }
-    </nav>
+                    ))
+                }
+            </ul>
+        </nav>
+    </div>
 </footer>

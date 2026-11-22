@@ -1,102 +1,101 @@
 ---
-import { link } from 'fs';
-import Logo from '../components/Logo.astro';
+import Logo from './Logo.astro';
+import { primaryLinks, sections, isActive } from '../data/navigation';
 
-const navItems = [
-    { linkText: 'Project NexusK', href: '/' },
-    { linkText: 'Christmas SP!', href: '/christmas-sp' }
-];
-
-const dropdowns = {
-    Random: [
-        { linkText: 'RR embed', href: '/random/rrembed' },
-        { linkText: 'Calculonton', href: '/random/calculonton' }
-    ],
-    Projects: [{ linkText: 'Not yet lol' }],
-    Tests: [
-        { linkText: 'Corgi!', href: '/tests/corgi' },
-        { linkText: 'Blobs', href: '/tests/blobs' }
-    ]
-};
+const { pathname } = Astro.url;
 ---
 
-<nav
-    class="relative flex flex-wrap items-center gap-4 sm:pt-1 sm:pb-1 text-2xl font-bold box-border border-10 border-transparent"
-    style="background-color: rgba(0, 0, 0, 0.212);"
->
-    <a href="/">
-        <Logo />
-    </a>
-    {
-        !!navItems?.length && (
-            <ul class="flex flex-wrap gap-x-2">
-                {navItems.map((item) => (
+<header class="sticky top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur-md">
+    <nav class="container-page flex items-center justify-between gap-4 py-3" aria-label="Main">
+        <a href="/" class="flex items-center gap-3 no-underline" aria-label="Project NexusK home">
+            <Logo />
+            <span class="hidden text-lg font-bold tracking-tight sm:inline">Project NexusK</span>
+        </a>
+
+        <button
+            type="button"
+            class="menu-toggle inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/15 md:hidden"
+            aria-controls="site-menu"
+            aria-expanded="false"
+            aria-label="Toggle menu"
+        >
+            <svg class="icon-open h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"></path>
+            </svg>
+            <svg class="icon-close hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"></path>
+            </svg>
+        </button>
+
+        <ul
+            id="site-menu"
+            class="absolute inset-x-0 top-full hidden flex-col gap-1 border-b border-white/10 bg-black/95 p-4 md:static md:flex md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0"
+        >
+            {
+                primaryLinks.map((link) => (
                     <li>
-                        <a href={item.href} class="inline-block px-1.5 py-1 sm:px-3 sm:py-2 no-underline">
-                            {item.linkText}
+                        <a href={link.href} class="nav-link" aria-current={isActive(pathname, link.href) ? 'page' : undefined}>
+                            {link.label}
                         </a>
                     </li>
-                ))}
-                {Object.entries(dropdowns).map(([dropdownTitle, items]) => (
-                    <li class="relative group">
-                        <a href={`/${dropdownTitle.toLowerCase()}`} class="inline-block px-1.5 py-1 sm:py-2 cursor-pointer no-underline">
-                            {dropdownTitle}
+                ))
+            }
+            {
+                sections.map((section) => (
+                    <li class="group relative">
+                        <a href={section.href} class="nav-link" aria-current={isActive(pathname, section.href) ? 'page' : undefined} aria-haspopup="true">
+                            {section.title}
+                            <svg class="hidden h-3.5 w-3.5 opacity-70 md:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M5.5 7.5 10 12l4.5-4.5z" />
+                            </svg>
                         </a>
-                        <ul class="absolute left-0 bg-black text-white shadow-lg rounded-md mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
-                            {items.map((item) => (
-                                <li>
-                                    <a href={item.href} class="block px-4 py-2 hover:bg-gray-900 no-underline">
-                                        {item.linkText}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
+                        {/* pt-2 (instead of a margin) keeps the hover area continuous between trigger and menu */}
+                        <div class="pl-4 md:invisible md:absolute md:left-0 md:top-full md:min-w-48 md:pl-0 md:pt-2 md:opacity-0 md:transition md:duration-200 md:group-hover:visible md:group-hover:opacity-100 md:group-focus-within:visible md:group-focus-within:opacity-100">
+                            <ul class="md:rounded-lg md:border md:border-white/10 md:bg-neutral-950 md:p-1.5 md:shadow-xl">
+                                {section.items.length ? (
+                                    section.items.map((item) => (
+                                        <li>
+                                            <a
+                                                href={item.href}
+                                                class="block whitespace-nowrap rounded-md px-3 py-2 text-sm text-white/80 no-underline hover:bg-white/10 hover:text-white hover:opacity-100 aria-[current=page]:text-primary"
+                                                aria-current={isActive(pathname, item.href) ? 'page' : undefined}
+                                            >
+                                                {item.label}
+                                            </a>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li class="px-3 py-2 text-sm whitespace-nowrap text-white/50 italic">Coming soon</li>
+                                )}
+                            </ul>
+                        </div>
                     </li>
-                ))}
-            </ul>
-        )
-    }
-</nav>
+                ))
+            }
+        </ul>
+    </nav>
+</header>
 
-<style>
-    nav {
-        position: relative; /* Ensure dropdowns are positioned relative to the nav */
-        overflow: visible; /* Allow dropdowns to extend outside the nav */
-    }
+<script>
+    const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+    const menu = document.getElementById('site-menu');
 
-    ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+    if (toggle && menu) {
+        const setOpen = (open: boolean) => {
+            toggle.setAttribute('aria-expanded', String(open));
+            menu.classList.toggle('hidden', !open);
+            menu.classList.toggle('flex', open);
+            toggle.querySelector('.icon-open')?.classList.toggle('hidden', open);
+            toggle.querySelector('.icon-close')?.classList.toggle('hidden', !open);
+        };
 
-    .group {
-        position: relative; /* Ensure dropdowns are positioned relative to the parent li */
+        toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') setOpen(false);
+        });
+        // Reset the mobile state when resizing up to the desktop layout.
+        matchMedia('(min-width: 48rem)').addEventListener('change', (e) => {
+            if (e.matches) setOpen(false);
+        });
     }
-
-    .group > ul {
-        position: absolute; /* Position dropdown relative to the parent li */
-        z-index: 10; /* Ensure dropdown appears above other elements */
-        white-space: nowrap; /* Prevent content from breaking into two lines */
-    }
-
-    .group > ul > li > a {
-        white-space: nowrap; /* Ensure dropdown items stay on one line */
-    }
-
-    .group > ul {
-        transition:
-            opacity 0.5s ease,
-            visibility 0.5s ease; /* Smooth fade-in and fade-out */
-    }
-
-    .group:hover > ul {
-        opacity: 1; /* Fully visible on hover */
-        visibility: visible; /* Ensure visibility */
-    }
-
-    .group > ul {
-        opacity: 0; /* Hidden by default */
-        visibility: hidden; /* Hidden by default */
-    }
-</style>
+</script>

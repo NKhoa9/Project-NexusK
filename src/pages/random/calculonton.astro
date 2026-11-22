@@ -2,35 +2,34 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 
-<Layout title="Caluloworld">
-    <div class="flex justify-center pt-20">
-        <form id="f" style="display: block;">
-            <label class="block">Type expression: <input type="text" style="background-color: rgba(255, 255, 255, 0.11);" /></label>
-            <button id="callo" class="border border-white p-2" type="button">Calculate</button>
+<Layout title="Calculonton">
+    <div class="mx-auto max-w-md rounded-2xl border border-white/10 bg-black/40 p-8 shadow-2xl">
+        <h1 class="mb-6 text-center text-3xl sm:text-4xl">Calculonton</h1>
+        <form id="calc-form" class="flex flex-col gap-4">
+            <label class="flex flex-col gap-2 text-sm text-white/70">
+                Type expression
+                <input name="expression" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 2 + 2" required class="text-lg" />
+            </label>
+            <button class="btn" type="submit">Calculate</button>
         </form>
-        <div id="result" class="pt-4 flex justify-center items-center"></div>
+        <div id="calc-result" class="flex min-h-24 items-center justify-center text-center" role="status" aria-live="polite"></div>
     </div>
-    <script>
-        const btn = document.getElementById('callo');
-        const form = document.getElementById('f');
-        const resultDiv = document.getElementById('result');
-
-        btn.addEventListener('click', () => {
-            form.style.display = 'none';
-
-            // Create and show the loading animation
-            const loader = document.createElement('div');
-            loader.innerHTML = 'Processing...';
-            resultDiv.innerHTML = ''; // Clear any previous content
-            resultDiv.appendChild(loader);
-
-            // Simulate a delay (e.g., 2 seconds) before showing the result
-            setTimeout(() => {
-                resultDiv.innerHTML = ''; // Clear the loader
-                const p = document.createElement('h1');
-                p.innerHTML = 'Hello World! lol';
-                resultDiv.appendChild(p);
-            }, 5000); // 2-second delay
-        });
-    </script>
 </Layout>
+
+<script>
+    const PROCESSING_MS = 5000;
+    const form = document.getElementById('calc-form') as HTMLFormElement | null;
+    const result = document.getElementById('calc-result');
+
+    form?.addEventListener('submit', (e) => {
+        // Handle via submit (so Enter works) and prevent the default full-page reload.
+        e.preventDefault();
+        if (!result) return;
+        form.hidden = true;
+        result.innerHTML = '<span class="animate-pulse text-white/70">Processing…</span>';
+
+        setTimeout(() => {
+            result.innerHTML = '<p class="text-4xl font-bold">Hello World! lol</p>';
+        }, PROCESSING_MS);
+    });
+</script>
