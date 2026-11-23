@@ -1,0 +1,250 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Grouped Stats" description="Calculate statistics from grouped frequency data.">
+    <div class="mx-auto max-w-7xl">
+        <a href="/projects" class="mb-5 inline-block text-sm text-white/60 no-underline hover:text-white">← Projects</a>
+        <header class="mb-8">
+            <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Statistics workspace</p>
+            <h1 class="mb-3">Grouped Stats</h1>
+            <p class="max-w-2xl text-white/60">Enter class intervals and frequencies. A blank row is added as you work.</p>
+        </header>
+
+        <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)]">
+            <section class="overflow-hidden rounded-2xl border border-white/10 bg-black/30" aria-labelledby="table-title">
+                <div class="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 p-5">
+                    <div><h2 id="table-title" class="text-xl">Frequency table</h2><p class="mt-1 text-sm text-white/50">Use intervals like <code>10–20</code> or a single value.</p></div>
+                    <label class="flex items-center gap-3 text-sm text-white/70">Frequency sets
+                        <input id="var-count" type="number" min="1" max="5" step="1" value="1" class="w-24 text-center" aria-label="Number of frequency sets" />
+                    </label>
+                </div>
+                <details id="generator-details" class="border-b border-white/10">
+                <summary class="cursor-pointer list-none px-4 py-3 text-sm font-medium text-primary">＋ Quick generate groups</summary>
+                <form id="group-generator" class="grid gap-3 bg-white/[0.025] p-4 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
+                    <label class="text-xs text-white/55">Start x₀<input name="start" type="number" step="any" required placeholder="0" class="mt-1 w-full !bg-white/5" /></label>
+                    <label class="text-xs text-white/55">Class width<input name="width" type="number" step="any" min="0.000001" required placeholder="10" class="mt-1 w-full !bg-white/5" /></label>
+                    <label class="text-xs text-white/55">Number of groups<input name="count" type="number" min="1" step="1" required placeholder="5" class="mt-1 w-full !bg-white/5" /></label>
+                    <button type="submit" class="btn !px-4 !py-2">Generate</button>
+                </form>
+                </details>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[25rem] border-collapse text-left text-sm" id="frequency-table">
+                        <thead class="bg-white/5 text-xs uppercase tracking-wider text-white/60"><tr id="table-head"></tr></thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 p-4">
+                    <p id="table-hint" class="text-xs text-white/45">Enter a group and frequency to add another row.</p>
+                    <button id="calculate" type="button" class="btn !px-4 !py-2">Calculate</button>
+                </div>
+            </section>
+
+            <section class="rounded-2xl border border-white/10 bg-black/30 p-5 sm:p-6" aria-labelledby="results-title">
+                <div class="mb-5 flex items-center justify-between gap-3">
+                    <div><h2 id="results-title" class="text-xl">Results</h2><p class="mt-1 text-sm text-white/50">Updates as you enter data.</p></div>
+                    <span id="result-status" class="rounded-full border border-white/10 px-3 py-1 text-xs text-white/50">Waiting for data</span>
+                </div>
+                <div id="results" class="space-y-5"></div>
+            </section>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    :global(.row-action) { appearance:none; box-sizing:border-box; display:inline-flex; width:2rem; height:2rem; min-width:2rem; min-height:2rem; padding:0; align-items:center; justify-content:center; vertical-align:middle; border:1px solid rgb(255 255 255 / .14); border-radius:.375rem; background:transparent; color:rgb(255 255 255 / .8); cursor:pointer; }
+    :global(.row-action:hover) { background:rgb(255 255 255 / .08); }
+    :global(.row-action svg) { display:block; width:.875rem; height:.875rem; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; }
+    :global(.row-action-delete:hover) { border-color:rgb(248 113 113 / .45); background:rgb(248 113 113 / .1); color:rgb(254 202 202); }
+</style>
+
+<script>
+    type Row = { group: string; frequencies: string[] };
+    const tableHead = document.querySelector<HTMLTableRowElement>('#table-head')!;
+    const tableBody = document.querySelector<HTMLTableSectionElement>('#table-body')!;
+    const variableInput = document.querySelector<HTMLInputElement>('#var-count')!;
+    const results = document.querySelector<HTMLDivElement>('#results')!;
+    const status = document.querySelector<HTMLSpanElement>('#result-status')!;
+    const hint = document.querySelector<HTMLParagraphElement>('#table-hint')!;
+    let variableCount = 1;
+    let rows: Row[] = [{ group: '', frequencies: [''] }];
+
+    const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+    const groupNumbers = (label: string) => label.trim().replace(/[–—]/g, '-').match(/-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi)?.map(Number) ?? [];
+    const midpoint = (label: string): number | null => {
+        const values = groupNumbers(label);
+        if (values.length === 1 && Number.isFinite(values[0])) return values[0];
+        if (values.length === 2 && values.every(Number.isFinite)) return (values[0] + values[1]) / 2;
+        return null;
+    };
+    const bounds = (label: string): [number, number] | null => {
+        const values = groupNumbers(label);
+        if (values.length === 1 && Number.isFinite(values[0])) return [values[0], values[0]];
+        if (values.length === 2 && values.every(Number.isFinite)) return [values[0], values[1]];
+        return null;
+    };
+    const fmt = (n: number | null) => n === null || !Number.isFinite(n) ? '—' : Number(n.toFixed(4)).toLocaleString(undefined, { maximumFractionDigits: 4 });
+
+    function renderTable() {
+        tableHead.innerHTML = `<th class="px-4 py-3 font-medium">Groups</th>${Array.from({ length: variableCount }, (_, i) => `<th class="px-4 py-3 font-medium">${variableCount === 1 ? 'Freq' : `Freq${i + 1}`}</th>`).join('')}<th class="px-3 py-3 font-medium">Rows</th>`;
+        tableBody.innerHTML = rows.map((row, ri) => `<tr class="border-t border-white/10">
+            <td class="px-3 py-2"><input data-row="${ri}" data-key="group" value="${esc(row.group)}" placeholder="e.g. [10, 20)" aria-label="Group ${ri + 1}" class="w-full min-w-32 !bg-white/5" /></td>
+            ${row.frequencies.map((f, fi) => `<td class="px-3 py-2"><input data-row="${ri}" data-freq="${fi}" type="number" min="0" step="1" value="${esc(f)}" placeholder="0" aria-label="${variableCount === 1 ? 'Frequency' : `Frequency ${fi + 1}`} for group ${ri + 1}" class="w-full min-w-20 !bg-white/5" /></td>`).join('')}
+            <td class="whitespace-nowrap px-3 py-2"><button type="button" data-insert="${ri}" class="row-action" aria-label="Insert row" title="Insert row"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg></button> <button type="button" data-delete="${ri}" class="row-action row-action-delete" aria-label="Delete row" title="Delete row"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" /></svg></button></td>
+        </tr>`).join('');
+        tableBody.querySelectorAll<HTMLInputElement>('input').forEach((input) => input.addEventListener('input', () => {
+            const row = rows[Number(input.dataset.row)];
+            const focusRow = Number(input.dataset.row), focusKey = input.dataset.key, focusFreq = input.dataset.freq;
+            if (input.dataset.key === 'group') row.group = input.value;
+            else row.frequencies[Number(input.dataset.freq)] = input.value;
+            if (input.dataset.key === 'group' && midpoint(row.group) !== null) row.frequencies = row.frequencies.map((f) => f === '' ? '1' : f);
+            rows = rows.filter((r, i) => i === rows.length - 1 || r.group.trim() || r.frequencies.some((v) => v !== ''));
+            if (rows.at(-1)!.group.trim() || rows.at(-1)!.frequencies.some((v) => v !== '')) rows.push({ group: '', frequencies: Array(variableCount).fill('') });
+            renderTable();
+            calculate();
+            const selector = focusKey === 'group' ? `input[data-row="${focusRow}"][data-key="group"]` : `input[data-row="${focusRow}"][data-freq="${focusFreq}"]`;
+            const restored = tableBody.querySelector<HTMLInputElement>(selector);
+            restored?.focus();
+            if (restored && focusKey === 'group') restored.setSelectionRange(restored.value.length, restored.value.length);
+        }));
+        tableBody.querySelectorAll<HTMLButtonElement>('[data-insert]').forEach((b) => b.addEventListener('click', () => { rows.splice(Number(b.dataset.insert) + 1, 0, { group: '', frequencies: Array(variableCount).fill('') }); renderTable(); calculate(); }));
+        tableBody.querySelectorAll<HTMLButtonElement>('[data-delete]').forEach((b) => b.addEventListener('click', () => { rows.splice(Number(b.dataset.delete), 1); if (!rows.length) rows.push({ group: '', frequencies: Array(variableCount).fill('') }); rows = rows.filter((r, i) => i === rows.length - 1 || r.group.trim() || r.frequencies.some((v) => v !== '')); renderTable(); calculate(); }));
+    }
+
+    tableBody.addEventListener('focusout', (event) => {
+        const input = event.target as HTMLInputElement;
+        if (input.dataset.key !== 'group') return;
+        const i = Number(input.dataset.row), value = rows[i]?.group.trim();
+        if (!value) return;
+        const parse = (s: string) => groupNumbers(s);
+        const current = parse(value);
+        if (current.length === 2 && current.every(Number.isFinite)) rows[i].group = `[${fmt(current[0])}, ${fmt(current[1])})`;
+        else if (current.length === 1 && Number.isFinite(current[0]) && i > 0) {
+            const previous = parse(rows[i - 1].group);
+            if (previous.length === 2 && previous.every(Number.isFinite)) rows[i].group = `[${fmt(current[0])}, ${fmt(current[0] + previous[1] - previous[0])})`;
+        }
+        input.value = rows[i].group;
+        calculate();
+    });
+
+    tableBody.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        const current = event.target as HTMLInputElement;
+        if (current.tagName !== 'INPUT') return;
+        event.preventDefault();
+        const cells = [...tableBody.querySelectorAll<HTMLInputElement>('input')];
+        const index = cells.indexOf(current);
+        if (index >= 0 && index < cells.length - 1) cells[index + 1].focus();
+        else {
+            const lastRow = rows.at(-1)!;
+            if (lastRow.group.trim() || lastRow.frequencies.some((value) => value !== '')) {
+                rows.push({ group: '', frequencies: Array(variableCount).fill('') });
+                renderTable();
+                calculate();
+            }
+            tableBody.querySelector<HTMLInputElement>('tr:last-child input[data-key="group"]')?.focus();
+        }
+    });
+
+    document.querySelector<HTMLFormElement>('#group-generator')?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const form = event.currentTarget as HTMLFormElement;
+        const start = Number((form.elements.namedItem('start') as HTMLInputElement).value), width = Number((form.elements.namedItem('width') as HTMLInputElement).value), count = Number((form.elements.namedItem('count') as HTMLInputElement).value);
+        if (!Number.isFinite(start) || !Number.isFinite(width) || width <= 0 || !Number.isInteger(count) || count < 1) return;
+        rows = Array.from({ length: count }, (_, i) => ({ group: `[${fmt(start + i * width)}, ${fmt(start + (i + 1) * width)})`, frequencies: Array(variableCount).fill('') }));
+        rows.push({ group: '', frequencies: Array(variableCount).fill('') }); renderTable(); calculate();
+        document.querySelector<HTMLDetailsElement>('#generator-details')!.open = false;
+    });
+
+    function calculate() {
+        const populatedRows = rows.filter((row) => row.group.trim() || row.frequencies.some((value) => value !== ''));
+        const invalidRows = populatedRows.filter((row) => midpoint(row.group) === null || row.frequencies.some((value) => value !== '' && (!Number.isInteger(Number(value)) || Number(value) < 0)));
+        const data = populatedRows.map((r) => ({ x: midpoint(r.group), fs: r.frequencies.map((v) => v === '' ? 0 : Number(v)) }))
+            .filter((r) => r.x !== null && r.fs.every((f) => Number.isInteger(f) && f >= 0)) as { x: number; fs: number[] }[];
+        const totalFreq = Array.from({ length: variableCount }, (_, j) => data.reduce((s, r) => s + (r.fs[j] || 0), 0));
+        const weighted = Array.from({ length: variableCount }, (_, j) => data.reduce((s, r) => s + r.x * (r.fs[j] || 0), 0));
+        const means = weighted.map((v, j) => totalFreq[j] ? v / totalFreq[j] : null);
+        const mixX = means.some((v) => v !== null) ? means.reduce<number>((s, v) => s + (v ?? 0), 0) / means.filter((v) => v !== null).length : null;
+        const variance = (j: number, sample: boolean) => {
+            const mean = means[j], n = totalFreq[j];
+            if (mean === null || n <= (sample ? 1 : 0)) return null;
+            return data.reduce((s, r) => s + (r.fs[j] || 0) * (r.x - mean) ** 2, 0) / (n - (sample ? 1 : 0));
+        };
+        const sorted = [...data].sort((a, b) => a.x - b.x);
+        const pooledFreq = sorted.map((r) => r.fs.reduce((a, b) => a + b, 0) / variableCount);
+        const quartile = (fraction: number) => {
+            const n = pooledFreq.reduce((a, b) => a + b, 0);
+            if (!n) return null;
+            const target = fraction * n;
+            let cumulative = 0;
+            for (let i = 0; i < sorted.length; i++) {
+                const f = pooledFreq[i];
+                if (f && cumulative + f >= target) {
+                    const width = i > 0 ? sorted[i].x - sorted[i - 1].x : (sorted.length > 1 ? sorted[1].x - sorted[0].x : 0);
+                    return width ? sorted[i].x - width / 2 + ((target - cumulative) / f) * width : sorted[i].x;
+                }
+                cumulative += f;
+            }
+            return sorted.at(-1)?.x ?? null;
+        };
+        const sortedModes = [...sorted].sort((a, b) => (b.fs.reduce((s, f) => s + f, 0)) - (a.fs.reduce((s, f) => s + f, 0)));
+        const pooledN = pooledFreq.reduce((a, b) => a + b, 0);
+        const metricsFor = (j: number): [string, number | null, string][] => {
+            const f = sorted.map((r) => r.fs[j] || 0), n = totalFreq[j], xbar = means[j], xTotal = weighted[j];
+            const q = (quartileIndex: number) => {
+                if (!n) return null;
+                const target = quartileIndex * n / 4; let cumulative = 0;
+                for (let i = 0; i < sorted.length; i++) {
+                    if (f[i] && cumulative + f[i] >= target) {
+                        const interval = bounds(rows.find((row) => midpoint(row.group) === sorted[i].x)?.group ?? '');
+                        if (interval && interval[1] > interval[0]) return interval[0] + ((target - cumulative) / f[i]) * (interval[1] - interval[0]);
+                        return sorted[i].x;
+                    }
+                    cumulative += f[i];
+                }
+                return sorted.at(-1)?.x ?? null;
+            };
+            const modeIndex = f.indexOf(Math.max(...f));
+            const modalBounds = bounds(rows.find((row) => midpoint(row.group) === sorted[modeIndex]?.x)?.group ?? '');
+            const modalFreq = f[modeIndex] ?? 0, prevFreq = f[modeIndex - 1] ?? 0, nextFreq = f[modeIndex + 1] ?? 0;
+            const modeDenominator = 2 * modalFreq - prevFreq - nextFreq;
+            const groupedMode = modalBounds && Number.isFinite(modeDenominator) && modeDenominator !== 0 && modalFreq > 0
+                ? modalBounds[0] + ((modalFreq - prevFreq) / modeDenominator) * (modalBounds[1] - modalBounds[0])
+                : null;
+            const activeBounds = sorted.flatMap((r, i) => f[i] > 0 ? [bounds(rows.find((row) => midpoint(row.group) === r.x)?.group ?? '')].filter((b): b is [number, number] => b !== null) : []);
+            const minBoundary = activeBounds.length ? Math.min(...activeBounds.map((b) => b[0])) : null;
+            const maxBoundary = activeBounds.length ? Math.max(...activeBounds.map((b) => b[1])) : null;
+            const q1 = q(1), q2 = q(2), q3 = q(3);
+            return [
+                ['Σx', xTotal, 'Weighted total: Σ(xᵢ × fᵢ).'], ['x̄', xbar, 'Weighted mean: Σ(xᵢ × fᵢ) / n.'], ['n', n, 'Total frequency: Σfᵢ.'],
+                ['σ²', variance(j, false), 'Population variance: σ² = Σnᵢ(xᵢ − x̄)² / n.'], ['σ', variance(j, false) === null ? null : Math.sqrt(variance(j, false)!), 'Population standard deviation: σ = √σ².'],
+                ['s²', variance(j, true), 'Sample variance: s² = Σnᵢ(xᵢ − x̄)² / (n − 1).'], ['s', variance(j, true) === null ? null : Math.sqrt(variance(j, true)!), 'Sample standard deviation: s = √s².'],
+                ['Min x', minBoundary, 'Lower boundary of the smallest group with a nonzero frequency.'], ['Max x', maxBoundary, 'Upper boundary of the largest group with a nonzero frequency.'],
+                ['Q₁', q1, 'Grouped quartile interpolation: aₚ + (i·n/4 − Cₚ₋₁)/nₚ × class width.'], ['Q₂ = Me', q2, 'Median (second quartile), calculated by grouped-data interpolation.'],
+                ['Q₃', q3, 'Grouped quartile interpolation.'], ['ΔQ', q1 !== null && q3 !== null ? q3 - q1 : null, 'Interquartile range: Q₃ − Q₁.'],
+                ['ΔR', minBoundary !== null && maxBoundary !== null ? maxBoundary - minBoundary : null, 'Range: largest upper group boundary − smallest lower group boundary.'],
+                ['M₀', groupedMode, 'Grouped mode: aᵢ + (nᵢ − nᵢ₋₁)/(2nᵢ − nᵢ₋₁ − nᵢ₊₁) × class width.']
+            ];
+        };
+        const cards = (items: [string, number | null, string][]) => items.map(([label, value, tip]) => `<div title="${esc(tip)}" class="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-3"><div class="text-xs text-white/50">${label}</div><div class="mt-1 font-mono text-base font-semibold tabular-nums">${fmt(value)}</div></div>`).join('');
+        results.innerHTML = variableCount === 1
+            ? `<div class="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3">${cards(metricsFor(0))}</div>`
+            : `<div class="grid gap-4">${Array.from({ length: variableCount }, (_, j) => `<section class="rounded-xl border border-white/10 p-4"><h3 class="mb-3 font-semibold">Frequency set ${j + 1}</h3><div class="grid grid-cols-2 gap-2 sm:grid-cols-3">${cards(metricsFor(j))}</div></section>`).join('')}</div>`;
+        status.textContent = invalidRows.length ? `${invalidRows.length} invalid row${invalidRows.length === 1 ? '' : 's'} skipped` : pooledN ? `${fmt(pooledN)} average frequency` : 'Waiting for data';
+        hint.textContent = rows.length - 1 ? `${rows.length - 1} group row${rows.length === 2 ? '' : 's'} entered.` : 'Enter a group and frequency to add another row.';
+    }
+
+    variableInput.addEventListener('input', () => {
+        const next = Number(variableInput.value);
+        if (!Number.isInteger(next) || next < 1 || next > 5) { variableInput.setCustomValidity('Enter a whole number from 1 to 5.'); return; }
+        variableInput.setCustomValidity('');
+        const oldCount = variableCount;
+        variableCount = next;
+        rows = rows.map((row) => ({ ...row, frequencies: Array.from({ length: variableCount }, (_, i) => row.frequencies[i] ?? '') }));
+        if (variableCount === oldCount) return;
+        renderTable(); calculate();
+    });
+    document.querySelector('#calculate')?.addEventListener('click', calculate);
+    renderTable(); calculate();
+</script>
+

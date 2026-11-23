@@ -1,0 +1,38 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Gehihi ↔ Discord" description="Meet Gehihi, a Gemini-powered Discord bot, and try it in the community server.">
+    <main class="mx-auto max-w-5xl px-5 py-12 sm:py-20">
+        <a href="/projects" class="mb-8 inline-flex text-sm text-white/60 no-underline transition hover:text-white">← Projects</a>
+        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-500/15 via-black/30 to-sky-500/10 p-7 sm:p-12">
+            <div class="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-violet-500/10 blur-3xl"></div>
+            <p class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary">A Discord side project</p>
+            <h1 class="mb-5 text-4xl font-bold tracking-tight sm:text-6xl">Gehihi <span class="text-white/40">↔</span> Discord</h1>
+            <p class="max-w-2xl text-lg leading-relaxed text-white/70">
+                Gehihi is a Gemini-powered Discord bot: chat with it, ask questions, and try its voice features right in the server. It’s a personal project built for fun, with a bit of randomness included.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a class="action secondary" href="https://discord.gg/cqjdsNnApw" target="_blank" rel="noopener noreferrer">Try Gehihi in Discord <span aria-hidden="true">↗</span></a>
+                <a class="action secondary" href="https://github.com/NKhoa9/gehihi-on-discord" target="_blank" rel="noopener noreferrer">View the GitHub project <span aria-hidden="true">↗</span></a>
+            </div>
+        </section>
+        <section class="mt-8 grid gap-4 sm:grid-cols-3">
+            <article class="feature"><span class="icon">✳</span><h2>Chat and ask</h2><p>Mention Gehihi or reply to it to start a conversation and get help with questions or tasks.</p></article>
+            <article class="feature"><span class="icon">♫</span><h2>Voice features</h2><p>Gehihi can join voice chat for a more conversational, live experience.</p></article>
+            <article class="feature"><span class="icon">⌘</span><h2>Open source</h2><p>Explore the code, setup notes, and project details in the GitHub repository.</p></article>
+        </section>
+        <p class="mt-6 text-center text-xs text-white/40">Gehihi is a personal, non-serious project. Have fun and expect a little randomness.</p>
+    </main>
+</Layout>
+
+<style>
+    .action { display:inline-flex; min-height:2.85rem; align-items:center; gap:.65rem; border:1px solid rgb(255 255 255 / .15); border-radius:.8rem; padding:.7rem 1rem; color:#fff; font-size:.92rem; font-weight:600; text-decoration:none; transition:transform .15s ease, background .15s ease; }
+    .action:hover { transform:translateY(-1px); }
+    .action.secondary { background:rgb(255 255 255 / .06); }
+    .action.secondary:hover { background:rgb(255 255 255 / .11); }
+    .feature { border:1px solid rgb(255 255 255 / .1); border-radius:1rem; background:rgb(0 0 0 / .22); padding:1.25rem; }
+    .icon { display:grid; width:2.35rem; height:2.35rem; place-items:center; border-radius:.7rem; background:rgb(139 109 233 / .15); color:#c0adff; }
+    .feature h2 { margin:.85rem 0 .4rem; font-size:1.05rem; font-weight:650; }
+    .feature p { margin:0; color:rgb(255 255 255 / .58); font-size:.9rem; line-height:1.65; }
+</style>

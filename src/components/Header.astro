@@ -5,8 +5,8 @@ import { primaryLinks, sections, isActive } from '../data/navigation';
 const { pathname } = Astro.url;
 ---
 
-<header class="sticky top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur-md">
-    <nav class="container-page flex items-center justify-between gap-4 py-3" aria-label="Main">
+<header class="fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur-md [font-family:Inter_Variable,Inter,ui-sans-serif,system-ui,sans-serif]">
+    <nav class="container-page flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3 md:flex-nowrap" aria-label="Main">
         <a href="/" class="flex items-center gap-3 no-underline" aria-label="Project NexusK home">
             <Logo />
             <span class="hidden text-lg font-bold tracking-tight sm:inline">Project NexusK</span>
@@ -29,12 +29,12 @@ const { pathname } = Astro.url;
 
         <ul
             id="site-menu"
-            class="absolute inset-x-0 top-full hidden flex-col gap-1 border-b border-white/10 bg-black/95 p-4 md:static md:flex md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0"
+            class="order-3 -mx-5 hidden w-[calc(100%+2.5rem)] flex-col gap-1 border-b border-white/10 bg-black/95 p-4 sm:-mx-8 sm:w-[calc(100%+4rem)] md:order-none md:mx-0 md:flex md:w-auto md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0"
         >
             {
                 primaryLinks.map((link) => (
                     <li>
-                        <a href={link.href} class="nav-link" aria-current={isActive(pathname, link.href) ? 'page' : undefined}>
+                        <a href={link.href} class="nav-link no-underline hover:no-underline" aria-current={isActive(pathname, link.href) ? 'page' : undefined}>
                             {link.label}
                         </a>
                     </li>
@@ -43,9 +43,9 @@ const { pathname } = Astro.url;
             {
                 sections.map((section) => (
                     <li class="group relative">
-                        <a href={section.href} class="nav-link" aria-current={isActive(pathname, section.href) ? 'page' : undefined} aria-haspopup="true">
+                        <a href={section.href} class="nav-link inline-flex items-center gap-1 no-underline hover:no-underline" aria-current={isActive(pathname, section.href) ? 'page' : undefined}>
                             {section.title}
-                            <svg class="hidden h-3.5 w-3.5 opacity-70 md:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-3.5 w-3.5 shrink-0 opacity-70" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path d="M5.5 7.5 10 12l4.5-4.5z" />
                             </svg>
                         </a>
