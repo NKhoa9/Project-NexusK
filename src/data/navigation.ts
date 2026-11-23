@@ -41,7 +41,7 @@ export const sections: NavSection[] = [
 ];
 
 export const socialLinks: NavLink[] = [
-    { label: 'Discord', href: 'https://discord.gg/xSqkHaWhna' },
+    { label: 'Discord', href: 'https://discord.gg/cqjdsNnApw' },
     { label: 'X', href: 'https://x.com/Lukas_wth' },
     { label: 'Github', href: 'https://github.com/NKhoa9' }
 ];

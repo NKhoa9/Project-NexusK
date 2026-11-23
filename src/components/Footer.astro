@@ -8,22 +8,23 @@ const year = new Date().getFullYear();
     <div class="container-page flex flex-col gap-6 py-8 sm:flex-row sm:items-start sm:justify-between">
         <div class="space-y-1">
             <p class="text-xl font-bold">Project NexusK</p>
-            <p class="text-sm text-white/60">Delivered to you by team SAKUL (only 1 member - Khoa at the moment bruh)</p>
+            <p class="text-sm text-white/60">Delivered to you by team SAKUL (Lukas & Agents (yes))</p>
             <p class="text-sm text-white/40">
-                &copy; {year} &middot; <a href="https://docs.netlify.com/frameworks/astro/" class="text-primary no-underline">Astro on Netlify</a>
+                &copy; {year} &middot;{' '}
+                <a href="https://docs.netlify.com/frameworks/astro/" class="text-primary no-underline">
+                    Astro on Netlify
+                </a>
             </p>
         </div>
         <nav aria-label="Social">
             <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-                {
-                    socialLinks.map((link) => (
-                        <li>
-                            <a href={link.href} target="_blank" rel="noopener noreferrer" class="text-white/70 no-underline hover:text-white">
-                                {link.label}
-                            </a>
-                        </li>
-                    ))
-                }
+                {socialLinks.map((link) => (
+                    <li>
+                        <a href={link.href} target="_blank" rel="noopener noreferrer" class="text-white/70 no-underline hover:text-white">
+                            {link.label}
+                        </a>
+                    </li>
+                ))}
             </ul>
         </nav>
     </div>
