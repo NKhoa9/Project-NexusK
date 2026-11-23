@@ -4,17 +4,14 @@ import Markdown from '../components/Markdown.astro';
 import { sections } from '../data/navigation';
 
 const welcomeMsg = `
-This is your gateway to exploring the amazing things we've made for you. Whether you're here to **learn**, **create**, or simply **have fun**, you're in the right place.
+This is a website (yes)
 
-> **Note:** This site is currently under development, very early stage, so most features may still be a work in progress or, in short, unavailable.
-> This site is recommended to be viewed on a computer.
+> **Note:** This site is currently under development, so most features may still be a work in progress or, in short, unavailable.
 > Thank you for your patience and support!
 
 ## Join Our Community
 
-We'd love to hear from you! Join our [Discord server](https://discord.gg/xSqkHaWhna) to connect with other users, share your thoughts, and stay updated on the latest developments.
-
-Stay curious, and enjoy your journey with **Project NexusK**!
+Join our [Discord server](https://discord.gg/cqjdsNnApw) because why not? lol
 `;
 ---
 
@@ -29,18 +26,18 @@ Stay curious, and enjoy your journey with **Project NexusK**!
     <section class="mt-14">
         <h2 class="mb-6">Explore</h2>
         <ul class="grid gap-4 sm:grid-cols-3">
-            {
-                sections.map((section) => (
-                    <li>
-                        <a href={section.href} class="card h-full">
-                            <span class="block text-lg font-semibold">{section.title}</span>
-                            <span class="mt-1 block text-sm text-white/60">{section.description}</span>
-                        </a>
-                    </li>
-                ))
-            }
+            {sections.map((section) => (
+                <li>
+                    <a href={section.href} class="card h-full">
+                        <span class="block text-lg font-semibold">{section.title}</span>
+                        <span class="mt-1 block text-sm text-white/60">{section.description}</span>
+                    </a>
+                </li>
+            ))}
         </ul>
     </section>
 
-    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ" class="btn btn-lg mt-12">Click here for FUN! :))</a>
+    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ" class="btn btn-lg mt-12">
+        Click here for FUN! :D
+    </a>
 </Layout>

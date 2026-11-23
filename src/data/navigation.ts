@@ -12,45 +12,38 @@ export interface NavSection {
 }
 
 /** Top-level links shown directly in the header. */
-export const primaryLinks: NavLink[] = [
-    { label: 'Home', href: '/' },
-    { label: 'Christmas SP!', href: '/christmas-sp' }
-];
+export const primaryLinks: NavLink[] = [];
 
-/** Grouped sections: rendered as header dropdowns and as hub pages (/random, /projects, /tests). */
+/** Grouped sections: rendered as header dropdowns and as hub pages. */
 export const sections: NavSection[] = [
     {
         title: 'Random',
         href: '/random',
         description: 'Odds and ends. Click at your own risk.',
         items: [
+            { label: 'Christmas SP!', href: '/christmas-sp' },
             { label: 'RR embed', href: '/random/rrembed', description: 'You know exactly what this is.' },
-            { label: 'Calculonton', href: '/random/calculonton', description: 'The world’s most advanced calculator™.' }
+            { label: 'Calculonton', href: '/random/calculonton', description: 'The world’s most advanced calculator™.' },
+            { label: 'Corgi!', href: '/random/image-cdn', description: 'Netlify Image CDN, demonstrated with a very good dog.' },
+            { label: 'Blobs', href: '/random/blobs', description: 'Generate random shapes and store them in Netlify Blobs.' }
         ]
     },
     {
         title: 'Projects',
         href: '/projects',
         description: 'Real projects live here. Eventually.',
-        items: []
-    },
-    {
-        title: 'Tests',
-        href: '/tests',
-        description: 'Experiments with Netlify platform features.',
         items: [
-            { label: 'Corgi!', href: '/tests/image-cdn', description: 'Netlify Image CDN, demonstrated with a very good dog.' },
-            { label: 'Blobs', href: '/tests/blobs', description: 'Generate random shapes and store them in Netlify Blobs.' }
+            { label: 'Grouped Stats', href: '/projects/grouped-stats', description: 'Work with grouped frequency statistics.' },
+            { label: 'GeMicro-wth', href: '/projects/gemicro-wth', description: 'A local-first chat workspace with GeMicro (Gehihi).' },
+            { label: 'Gehihi ↔ Discord', href: '/projects/gehihi-discord', description: 'Try the Gehihi-powered Discord bot.' }
         ]
-    }
+    },
 ];
 
 export const socialLinks: NavLink[] = [
     { label: 'Discord', href: 'https://discord.gg/xSqkHaWhna' },
-    { label: 'YouTube', href: 'https://www.youtube.com/@ndkas7986' },
-    { label: 'TikTok', href: 'https://tiktok.com/@khoanoob9' },
-    { label: 'X', href: 'https://x.com/NLukash_' },
-    { label: 'Facebook', href: 'https://www.facebook.com/khoa.noob.9/' }
+    { label: 'X', href: 'https://x.com/Lukas_wth' },
+    { label: 'Github', href: 'https://github.com/NKhoa9' }
 ];
 
 export function getSection(title: string): NavSection {

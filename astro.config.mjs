@@ -10,8 +10,8 @@ export default defineConfig({
     },
     integrations: [react()],
     adapter: netlify({
-        devFeatures: {
-            environmentVariables: true
-        }
+        // Netlify's local Edge Functions runtime requires Deno. Keep Astro's
+        // standalone dev server usable when that runtime is unavailable.
+        devFeatures: { edgeFunctions: false }
     })
 });
